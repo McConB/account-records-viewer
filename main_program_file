@@ -1,0 +1,461 @@
+// Braden McConville
+// Final Project
+
+#include <iostream>
+#include <iomanip>
+#include <fstream>
+#include <string>
+#include <vector>
+using namespace std;
+
+const int RECORDS_NUM = 8;
+
+struct accountRecords
+{
+	string name, address, city, state, zip, phone, balance, date;
+};
+
+void newRecord()
+{
+	accountRecords records;
+
+	string string_var;
+	int int_var;
+	double double_var;
+
+	cin.clear();
+	cin.ignore();
+
+	while(true)
+	{
+		cout << "Please enter the customer's name: ";
+		getline(cin, string_var);
+		cout << endl;
+
+		if(string_var == "")
+		{
+			cout << "Invalid input. Please try again." << endl;
+		}
+		else
+		{
+			records.name = string_var;
+			break;
+		}
+	}
+
+	while(true)
+	{
+		cout << "Please enter the customer's address: ";
+		getline(cin, string_var);
+		cout << endl;
+
+		if(string_var == "")
+		{
+			cout << "Invalid input. Please try again." << endl;
+		}
+		else
+		{
+			records.address = string_var;
+			break;
+		}
+	}
+
+	while(true)
+	{
+		cout << "Please enter the customer's city of residence: ";
+		getline(cin, string_var);
+		cout << endl;
+
+		if(string_var == "")
+		{
+			cout << "Invalid input. Please try again." << endl;
+		}
+		else
+		{
+			records.city = string_var;
+			break;
+		}
+	}
+
+	while(true)
+	{
+		cout << "Please enter the customer's state of residence: ";
+		getline(cin, string_var);
+		cout << endl;
+
+		if(string_var == "")
+		{
+			cout << "Invalid input. Please try again." << endl;
+		}
+		else
+		{
+			records.state = string_var;
+			break;
+		}
+	}
+
+	while(true)
+	{
+		cout << "Please enter the customer's ZIP code: ";
+		cin >> int_var;
+		cout << endl;
+
+		if(cin.fail())
+		{
+			cout << "Invalid input. Please try again." << endl;
+		}
+		else
+		{
+            string temp_str = to_string(int_var);
+			records.zip = temp_str;
+			break;
+		}
+	}
+
+	while(true)
+	{
+        cin.clear();
+        cin.ignore();
+
+		cout << "Please enter the customer's phone number: ";
+		getline(cin, string_var);
+		cout << endl;
+
+		if(string_var == "")
+		{
+			cout << "Invalid input. Please try again." << endl;
+		}
+		else
+		{
+			records.phone = string_var;
+			break;
+		}
+	}
+
+	while(true)
+	{
+		cout << "Please enter the customer's account balance: ";
+		cin >> double_var;
+		cout << endl;
+
+		if(double_var < 0)
+		{
+			cout << "Invalid input. Please try again." << endl;
+		}
+		else
+		{
+            string temp_str = to_string(double_var);
+			records.balance = temp_str;
+			break;
+		}
+	}
+
+	while(true)
+	{
+        cin.clear();
+        cin.ignore();
+
+		cout << "Please enter the customer's last payment date (mm/dd/yyyy): ";
+		getline(cin, string_var);
+		cout << endl;
+
+		if(string_var == "" || string_var.length() != 10)
+		{
+			cout << "Invalid input. Please try again." << endl;
+		}
+		else
+		{
+			records.date = string_var;
+			break;
+		}
+	}
+
+	ofstream file;
+	file.open("account_records.txt", ios::app);
+
+	file << records.name << endl;
+	file << records.address << endl;
+	file << records.city << endl;
+	file << records.state << endl;
+	file << records.zip << endl;
+	file << records.phone << endl;
+	file << "$" << records.balance << endl;
+	file << records.date << endl << endl;
+
+	file.close();
+};
+
+void displayRecord()
+{
+	string line, name_str;
+	bool found = false;
+	vector<string> vec_records;
+
+	cin.clear();
+	cin.ignore();
+
+	cout << "Please enter the name associated with the record to be displayed: ";
+	getline(cin, name_str);
+
+	ifstream file;
+	file.open("account_records.txt");
+
+	while(getline(file, line))
+	{
+        vec_records.push_back(line);
+	}
+
+	int index_num = 0;
+
+    for(int i = 0; i < vec_records.size(); i++)
+    {
+        if(vec_records[i] == name_str)
+        {
+            found = true;
+            index_num = i;
+            break;
+        }
+    }
+
+    cout << endl;
+
+    if(found)
+    {
+        for(int i = 0; i < vec_records.size(); i++)
+        {
+            if(i >= index_num && i <= index_num + RECORDS_NUM)
+            {
+                cout << vec_records[i] << endl;
+            }
+        }
+    }
+    else
+    {
+        cout << "Record not found." << endl;
+    }
+
+	vec_records.clear();
+
+	file.close();
+};
+
+void deleteRecord()
+{
+	string line, name_str;
+	bool found = false;
+	vector<string> vec_records;
+
+	cin.clear();
+	cin.ignore();
+
+	cout << "Please enter the name associated with the record to be deleted: ";
+	getline(cin, name_str);
+
+	cout << endl;
+
+	ifstream file;
+	file.open("account_records.txt");
+
+	while(getline(file, line))
+	{
+        vec_records.push_back(line);
+	}
+
+	file.close();
+
+	int index_num = 0;
+
+	for(int i = 0; i < vec_records.size(); i++)
+    {
+        if(vec_records[i] == name_str)
+        {
+            found = true;
+            index_num = i;
+            break;
+        }
+    }
+
+    if(found)
+    {
+        vec_records.erase(vec_records.begin()+index_num, vec_records.begin()+(index_num+RECORDS_NUM+1));
+
+        ofstream file;
+        file.open("account_records.txt");
+
+        for(int i = 0; i < vec_records.size(); i++)
+        {
+            file << vec_records[i] << endl;
+        }
+
+        file.close();
+    }
+    else
+    {
+        cout << "Record not found." << endl;
+    }
+
+	vec_records.clear();
+};
+
+void changeRecord()
+{
+	string line, name_str;
+	int opt;
+	bool found = false;
+	vector<string> vec_records;
+
+	cin.clear();
+	cin.ignore();
+
+	cout << "Please enter the name associated with the record to be changed: ";
+	getline(cin, name_str);
+
+	cout << endl;
+
+	ifstream file;
+	file.open("account_records.txt");
+
+	while(getline(file, line))
+	{
+        vec_records.push_back(line);
+	}
+
+	file.close();
+
+	int index_num = 0;
+
+	for(int i = 0; i < vec_records.size(); i++)
+    {
+        if(vec_records[i] == name_str)
+        {
+            found = true;
+            index_num = i;
+            break;
+        }
+    }
+
+    if(found)
+    {
+        while(true)
+        {
+            cout << "1. Name" << endl;
+            cout << "2. Address" << endl;
+            cout << "3. City" << endl;
+            cout << "4. State" << endl;
+            cout << "5. ZIP" << endl;
+            cout << "6. Phone" << endl;
+            cout << "7. Account Balance" << endl;
+            cout << "8. Last Payment Date" << endl;
+            cout << "What would you like to change? (1-8): ";
+            cin >> opt;
+
+            cout << endl;
+
+            if(opt >= 1 && opt <= 8)
+            {
+                break;
+            }
+            else
+            {
+                cout << endl << "Invalid input. Please try again." << endl;
+            }
+        }
+
+        cin.clear();
+        cin.ignore();
+
+        string new_str;
+
+        cout << "Please enter a new record: ";
+        getline(cin, new_str);
+
+        cout << endl;
+
+        ofstream file;
+        file.open("account_records.txt");
+
+        for(int i = 0; i < vec_records.size(); i++)
+        {
+            if(i == index_num + opt - 1)
+            {
+                file << new_str << endl;
+            }
+            else
+            {
+                file << vec_records[i] << endl;
+            }
+        }
+
+        file.close();
+    }
+    else
+    {
+        cout << "Record not found." << endl << endl;
+    }
+
+	vec_records.clear();
+};
+
+void displayAllRecords()
+{
+	string line;
+
+	ifstream file;
+	file.open("account_records.txt");
+
+	while(getline(file, line))
+	{
+		cout << line << endl;
+	}
+
+	file.close();
+};
+
+int main()
+{
+	int opt;
+	bool exit = false;
+
+	cout << fixed << setprecision(2);
+
+	while(!exit)
+	{
+		cout << "1. Enter a new record." << endl;
+		cout << "2. Display a record." << endl;
+		cout << "3. Delete a record." << endl;
+		cout << "4. Change a record." << endl;
+		cout << "5. Display all records." << endl;
+		cout << "6. Exit program." << endl;
+		cout << "What would you like to do? (1-6): ";
+		cin >> opt;
+
+		cout << endl;
+
+		switch(opt)
+		{
+            case 1:
+                newRecord();
+                break;
+            case 2:
+                displayRecord();
+                break;
+            case 3:
+                deleteRecord();
+                break;
+            case 4:
+                changeRecord();
+                break;
+            case 5:
+                displayAllRecords();
+                break;
+            case 6:
+                exit = true;
+                break;
+            default:
+                cout << "Invalid input. Please try again";
+                break;
+		}
+	}
+
+	return 0;
+}
